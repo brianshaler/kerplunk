@@ -102,9 +102,6 @@ module.exports = (params = {}) ->
           return pluginName
       return
 
-    getConfig: (name, next) ->
-      plugins.getConfig name, next
-
     getMongoose: (dbName) ->
       dbPlugin = plugins.get 'kerplunk-database'
       dbPlugin.getMongoose dbName
