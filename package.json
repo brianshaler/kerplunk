@@ -27,6 +27,13 @@
     "kerplunk-plugin-manager": "^0.0.1",
     "kerplunk-server": "^0.0.1",
     "kerplunk-stream": "^0.0.1",
+    "kerplunk-place": "^0.0.1",
+    "kerplunk-characteristic": "^0.0.1",
+    "kerplunk-topic": "^0.0.1",
+    "kerplunk-notifications": "^0.0.1",
+    "kerplunk-nav": "^0.0.1",
+    "kerplunk-dashboard-skin": "^0.0.1",
+    "kerplunk-bootstrap": "^0.0.1",
     "recursive-readdir": "^1.2.1",
     "when": "^3.7.3"
   },
