@@ -1,0 +1,47 @@
+{
+  "name": "kerplunk",
+  "version": "0.0.1",
+  "description": "Kerplunk!",
+  "contributors": [
+    {
+      "name": "Brian Shaler",
+      "email": "brianshaler@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianshaler/kerplunk.git"
+  },
+  "keywords": [
+    "kerplunk"
+  ],
+  "main": "./index.js",
+  "dependencies": {
+    "docker-remote-api": "^4.4.1",
+    "lodash": "~2.3.0",
+    "kerplunk-activityitem": "^0.0.1",
+    "kerplunk-admin": "^0.0.1",
+    "kerplunk-dashboard": "^0.0.1",
+    "kerplunk-database": "^0.0.1",
+    "kerplunk-identity": "^0.0.1",
+    "kerplunk-plugin-manager": "^0.0.1",
+    "kerplunk-server": "^0.0.1",
+    "kerplunk-stream": "^0.0.1",
+    "recursive-readdir": "^1.2.1",
+    "when": "^3.7.3"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.9.1",
+    "glut": "0.0.1",
+    "gulp": "^3.8.8",
+    "gulp-coffee": "^2.3.1",
+    "mocha": "~1.1.0"
+  },
+  "scripts": {
+    "start": "forever --spinSleepTime 500 -c 'nodemon --exitcrash --verbose --watch lib --watch cache/cache/pluginchanged.txt --watch index.js' index.js"
+  },
+  "license": "MIT",
+  "engine": {
+    "node": ">=0.10"
+  }
+}

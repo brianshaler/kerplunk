@@ -1,0 +1,21 @@
+{
+  "core": [
+    "kerplunk-database",
+    "kerplunk-server",
+    "kerplunk-admin",
+    "kerplunk-plugin-manager",
+    "kerplunk-identity",
+    "kerplunk-activityitem",
+    "kerplunk-dashboard",
+    "kerplunk-stream"
+  ],
+  "auto": [
+    "kerplunk-place",
+    "kerplunk-characteristic",
+    "kerplunk-topic",
+    "kerplunk-notifications",
+    "kerplunk-nav",
+    "kerplunk-dashboard-skin",
+    "kerplunk-bootstrap"
+  ]
+}

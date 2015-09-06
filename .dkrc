@@ -1,0 +1,26 @@
+{
+  "*": {
+    "env": {
+      "NODE_PORT": 80
+    },
+    "volumes": {
+      "/var/run/docker.sock": "/var/run/docker.sock",
+      "/usr/bin/docker": "/usr/bin/docker"
+    }
+  },
+  "local": {
+    "volumes": {
+      ".": "/usr/src/app"
+    }
+  },
+  "plugins": {
+    "volumes": {
+      "../kerplunk-plugins": "/usr/src/kerplunk-plugins"
+    }
+  },
+  "dev": {
+    "ports": {
+      "3000": 80
+    }
+  }
+}
