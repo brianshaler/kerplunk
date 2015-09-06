@@ -23,7 +23,7 @@
     "kerplunk-bootstrap": "^0.0.2",
     "kerplunk-characteristic": "^0.0.2",
     "kerplunk-dashboard": "^0.0.2",
-    "kerplunk-dashboard-skin": "^0.0.2",
+    "kerplunk-dashboard-skin": "^0.0.3",
     "kerplunk-database": "^0.0.3",
     "kerplunk-identity": "^0.0.2",
     "kerplunk-nav": "^0.0.2",
