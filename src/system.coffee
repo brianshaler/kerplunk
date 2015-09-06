@@ -85,7 +85,7 @@ module.exports = (params = {}) ->
         events.do 'init'
 
     stop: (next) ->
-      System.server.stop ->
+      plugins.get('kerplunk-server').stop ->
         console.log 'System:: server stopped'
         plugins.stop ->
           console.log 'System:: plugins stopped'
@@ -140,7 +140,7 @@ module.exports = (params = {}) ->
       plugins.get('kerplunk-server').getSocket socketName
 
     checkPermissions: (pluginName, keys...) ->
-      foundInCore = -1 < System.pluginData().core.indexOf pluginName
+      foundInCore = -1 < pluginData.core.indexOf pluginName
       return true if foundInCore
       return true if pluginName == keys[0]
       ref = appSettings.settings.permissions?[pluginName]
@@ -153,7 +153,7 @@ module.exports = (params = {}) ->
     requestGlobalAccess: (pluginName, key) ->
       return true if (new RegExp("^#{pluginName}\\.?")).test key
       return true if /^public\.?/.test key
-      foundInCore = -1 < System.pluginData().core.indexOf pluginName
+      foundInCore = -1 < pluginData.core.indexOf pluginName
       #console.log 'requestGlobalAccess', pluginName, key
       #console.log isCore == true, key == pluginName, appSettings.settings?.permissions?[pluginName]?.globals?[key] == true
       #unless isCore or key == pluginName
