@@ -171,14 +171,9 @@ module.exports = (params = {}) ->
       Promise.promise (resolve, reject) ->
         console.log 'installing', pluginName
         {spawn} = require 'child_process'
-        # childProcess = spawn 'npm', [
-        #   'install'
-        #   pluginName
-        # ]
-        childProcess = spawn 'cp', [
-          '-R'
-          "tmp/#{pluginName}"
-          'node_modules'
+        childProcess = spawn 'npm', [
+          'install'
+          pluginName
         ]
         childProcess.stdout.pipe process.stdout
         childProcess.stderr.pipe process.stderr
