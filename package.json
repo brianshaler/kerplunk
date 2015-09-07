@@ -30,7 +30,7 @@
     "kerplunk-nav": "^0.0.2",
     "kerplunk-notifications": "^0.0.3",
     "kerplunk-place": "^0.0.2",
-    "kerplunk-plugin-manager": "^0.0.3",
+    "kerplunk-plugin-manager": "^0.0.4",
     "kerplunk-server": "^0.0.2",
     "kerplunk-stream": "^0.0.2",
     "kerplunk-topic": "^0.0.2",
