@@ -16,6 +16,7 @@
     "kerplunk-notifications",
     "kerplunk-nav",
     "kerplunk-dashboard-skin",
-    "kerplunk-bootstrap"
+    "kerplunk-bootstrap",
+    "kerplunk-identity-autocomplete"
   ]
 }
