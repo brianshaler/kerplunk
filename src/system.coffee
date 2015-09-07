@@ -125,16 +125,20 @@ module.exports = (params = {}) ->
       components.keys()
 
     getSettings: (pluginName, callback) ->
-      appSettings.getPluginSettings pluginName
-      .done (settings) ->
-        callback null, settings
-      , callback
+      promise = appSettings.getPluginSettings pluginName
+      if typeof callback is 'function'
+        promise.done (settings) ->
+          callback null, settings
+        , callback
+      promise
 
     updateSettings: (pluginName, newVal, callback) ->
-      appSettings.updatePluginSettings pluginName, newVal
-      .done (settings) ->
-        callback null, settings
-      , callback
+      promise = appSettings.updatePluginSettings pluginName, newVal
+      if typeof callback is 'function'
+        promise.done (settings) ->
+          callback null, settings
+        , callback
+      promise
 
     getSocket: (socketName) ->
       plugins.get('kerplunk-server').getSocket socketName

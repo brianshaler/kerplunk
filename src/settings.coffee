@@ -13,27 +13,35 @@ module.exports = (System) ->
       AppSettings.SettingsModel = mongoose.model 'Settings', SettingsSchema mongoose
 
     getSettings: ->
-      Promise.promise (resolve, reject) ->
-        AppSettings.getSettingsModel()
-        .findOrCreate 'kerplunk-admin', (err, settings) ->
-          return reject err if err
-          AppSettings.settings = settings?.value ? {}
-          AppSettings.settings.isSetup = settings?.value?.setupStep >= 1
-          resolve AppSettings.settings
+      AppSettings.getSettingsModel()
+      .findOrCreate 'kerplunk-admin'
+      .then (settings) ->
+        AppSettings.settings = settings?.value ? {}
+        AppSettings.settings.isSetup = settings?.value?.setupStep >= 1
+        AppSettings.settings
 
     getPluginSettings: (pluginName) ->
-      Promise.promise (resolve, reject) ->
-        # console.log 'getSettings', pluginName, typeof callback
-        AppSettings.getSettingsModel()
-        .findOrCreate pluginName, (err, settings) ->
-          return reject err if err
-          resolve settings.value ? {}
+      AppSettings.getSettingsModel()
+      .findOrCreate pluginName
+      .then (settings) ->
+        settings.value ? {}
 
     updatePluginSettings: (pluginName, newVal) ->
-      Promise.promise (resolve, reject) ->
-        AppSettings.getSettingsModel()
-        .findOrCreate pluginName, (err, settings) ->
-          return reject err if err
-          settings.value = newVal
-          settings.markModified 'value'
-          resolve settings.save().then -> settings.value
+      if newVal?.$set
+        where =
+          option: pluginName
+        updateVal =
+          $set: {}
+        for k, v of newVal.$set
+          updateVal.$set["value.#{k}"] = v
+        mpromise = AppSettings.getSettingsModel()
+        .update where, updateVal
+        Promise mpromise
+      else
+        Promise.promise (resolve, reject) ->
+          AppSettings.getSettingsModel()
+          .findOrCreate pluginName, (err, settings) ->
+            return reject err if err
+            settings.value = newVal
+            settings.markModified 'value'
+            resolve settings.save().then -> settings.value
