@@ -14,6 +14,8 @@ RUN npm install
 
 ADD . /usr/src/app/
 
+RUN mkdir -p /usr/src/app/cache/
+
 RUN gulp
 
 CMD ["npm", "start"]
