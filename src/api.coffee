@@ -69,6 +69,8 @@ module.exports = (System) ->
       return System.getSettings pluginName, callback if pluginName == targetName
       if System.checkPermissions pluginName, targetName, 'settings'
         return System.getSettings targetName, callback
+      unless typeof callback is 'function'
+        callback = Promise.reject
       callback new Error 'permission denied'
 
     updateSettingsByName: (pluginName, targetName, settings, callback) ->
@@ -76,6 +78,8 @@ module.exports = (System) ->
       return System.updateSettings pluginName, settings, callback if pluginName == targetName
       if System.checkPermissions pluginName, targetName, 'settings'
         return System.updateSettings targetName, settings, callback
+      unless typeof callback is 'function'
+        callback = Promise.reject
       callback new Error 'permission denied'
 
     updateSettings: (pluginName, newVal, callback) ->
