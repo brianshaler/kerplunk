@@ -5,12 +5,14 @@ path = require 'path'
 Promise = require 'when'
 
 createLink = (targetPath, linkPath) ->
-  targetExists = fs.existsSync targetPath
-  linkExists = fs.existsSync linkPath
-  if targetExists and !linkExists
-    linkcmd = "ln -s #{targetPath}/ #{linkPath}"
-    console.log '$', linkcmd
-    exec linkcmd #, (err, data) -> throw err if err
+  fs.exists linkPath, (linkExists) ->
+    return if linkExists
+    fs.exists targetPath, (targetExists) ->
+      if targetExists
+        linkcmd = "ln -s #{targetPath}/ #{linkPath}"
+        console.log '$', linkcmd
+        exec linkcmd #, (err, data) -> throw err if err
+
 
 module.exports = (pluginConfig, System) ->
   #console.log 'setupPlugin', pluginConfig.name, pluginConfig.isCore

@@ -2,10 +2,10 @@ fs = require 'fs'
 path = require 'path'
 
 _ = require 'lodash'
-modulesByKeyword = require 'modules-by-keyword'
 Promise = require 'when'
 
 init = require './init'
+
 loadAllConfigs = require './configs/loadAllConfigs'
 
 module.exports = (System) ->

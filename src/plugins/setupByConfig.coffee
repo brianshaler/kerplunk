@@ -1,3 +1,5 @@
+Promise = require 'when'
+
 getServices = require './services/getServices'
 setupPlugin = require './setupPlugin'
 
@@ -12,7 +14,13 @@ module.exports = (System, config) ->
   .then ->
     setupPlugin config, SystemReference, config.isCore
   .then (pluginConfig) ->
+    # not really using plugin.models..
     return pluginConfig unless pluginConfig.plugin?.models
     for name, model in pluginConfig.plugin.models
       SystemReference.registerModel name, model
-    pluginConfig
+  .then (pluginConfig) ->
+    return pluginConfig unless pluginConfig.plugin?.init
+    Promise.promise (resolve, reject) ->
+      pluginConfig.plugin.init (err) ->
+        return reject err if err
+        resolve pluginConfig
