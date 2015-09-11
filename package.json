@@ -35,13 +35,13 @@
     "kerplunk-stream": "0.0.x",
     "kerplunk-topic": "0.0.x",
     "lodash": "~2.3.0",
-    "modules-by-keyword": "0.0.x",
+    "modules-by-keyword": "0.0.0",
     "recursive-readdir": "^1.2.1",
     "when": "^3.7.3"
   },
   "devDependencies": {
     "coffee-script": "^1.9.1",
-    "glut": "0.0.x",
+    "glut": "0.0.1",
     "gulp": "^3.8.8",
     "gulp-coffee": "^2.3.1",
     "mocha": "~1.1.0"
