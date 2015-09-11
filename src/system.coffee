@@ -196,3 +196,4 @@ module.exports = (params = {}) ->
     .then plugins.run
     .then ->
       events.do 'init'
+      true
