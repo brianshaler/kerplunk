@@ -27,3 +27,7 @@ module.exports = (service) ->
     serviceName: serviceName
     ip: container.NetworkSettings.Gateway
     ports: ports
+  .catch (err) ->
+    console.log 'setupService error'
+    console.log err?.stack
+    throw err

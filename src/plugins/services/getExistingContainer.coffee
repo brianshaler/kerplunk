@@ -1,15 +1,19 @@
 _ = require 'lodash'
 Promise = require 'when'
-docker = require 'docker-remote-api'
+dockerode = require 'dockerode'
 
-request = docker()
+docker = dockerode()
 
 module.exports = (name) ->
-  deferred = Promise.defer()
-  request.get '/containers/json',
-    {json: true}
-    (err, containers) ->
-      return deferred.reject err if err
-      deferred.resolve _.find containers, (container) ->
-        -1 != container.Names.indexOf "/#{name}"
-  deferred.promise
+  Promise.promise (resolve, reject) ->
+    docker.listContainers {all: false}, (err, data) ->
+      return reject err if err
+      resolve data
+  .then (containers) ->
+    Name = "/#{name}"
+    _.find containers, (container) ->
+      0 <= container.Names.indexOf Name
+  .catch (err) ->
+    console.log 'getExistingContainer error'
+    console.log err?.stack ? err
+    throw err

@@ -17,7 +17,7 @@
   ],
   "main": "./index.js",
   "dependencies": {
-    "docker-remote-api": "^4.4.1",
+    "dockerode": "^2.2.2",
     "kerplunk-activityitem": "0.0.x",
     "kerplunk-admin": "0.0.x",
     "kerplunk-bootstrap": "0.0.x",

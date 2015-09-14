@@ -2,46 +2,55 @@ path = require 'path'
 
 _ = require 'lodash'
 Promise = require 'when'
-docker = require 'docker-remote-api'
 
-request = docker()
+dockerode = require 'dockerode'
 
-createContainer = (opt) ->
-  deferred = Promise.defer()
-  request.post '/containers/create', opt, (err, container) ->
-    return deferred.reject err if err
-    deferred.resolve container.Id
-  deferred.promise
+docker = dockerode()
 
-createImage = (opt) ->
-  deferred = Promise.defer()
-  request.post '/images/create', opt, (err, image) ->
-    return deferred.reject err if err
-    deferred.resolve image
-  .end()
-  deferred.promise
+pullImage = (name) ->
+  Promise.promise (resolve, reject) ->
+    docker.pull name, (err, stream) ->
+      return reject err if err
+      docker.modem.followProgress stream, (err, output) ->
+        return reject err if err
+        resolve output
+      , (event) ->
+        console.log 'onProgress event', event
 
-startContainer = (id) ->
-  deferred = Promise.defer()
-  request.post "/containers/#{id}/start", {json: {}}, (err, container) ->
-    return deferred.reject err if err
-    deferred.resolve id
-  .end()
-  deferred.promise
+runContainer = (opt) ->
+  console.log 'runContainer', opt
+  Promise.promise (resolve, reject) ->
+    docker.createContainer opt, (err, container) ->
+      return reject err if err
+      container.start (err, data) ->
+        return reject err if err
+        resolve container.id # lowercase .id? nice.
 
-createAndStart = (opt) ->
-  createContainer opt
-  .then (id) ->
-    startContainer id
+deleteContainer = (id) ->
+  container = docker.getContainer id
+  Promise.promise (resolve, reject) ->
+    container.remove (err, data) ->
+      return reject err if err
+      resolve data
+  .then (data) ->
+    console.log 'deleteContainer result:', data
+    id
+  .catch (err) ->
+    console.log 'deleteContainer failed'
+    console.log err?.stack ? err
+    throw err
 
 pullAndCreate = (opt) ->
-  console.log 'sry i have to pull', opt.json.Image
-  imgOpt =
-    qs:
-      fromImage: opt.json.Image
-  createImage imgOpt
+  console.log 'sry i have to pull', opt.Image
+  pullImage opt.Image
+  .then (img) ->
+    console.log 'pulled image', img
+    runContainer opt
+
+deleteAndCreate = (opt) ->
+  deleteContainer opt.name
   .then ->
-    createAndStart opt
+    runContainer opt
 
 module.exports = (name, config) ->
   ports = {}
@@ -56,23 +65,27 @@ module.exports = (name, config) ->
       binds.push "#{hostPath}:#{volume}"
       volumes[volume] = {}
   createOpt =
-    qs:
-      name: name
-    json:
-      Image: config.image
-      Volumes: volumes
-      HostConfig:
-        PortBindings: ports
-        Binds: binds
+    Image: config.image
+    name: name
+    Volumes: volumes
+    HostConfig:
+      PortBindings: ports
+      Binds: binds
   if config.cmd
-    createOpt.json.Cmd = config.cmd
+    createOpt.Cmd = config.cmd
   #console.log 'opt', opt
 
-  createAndStart createOpt
+  runContainer createOpt
+  .then (data) ->
+    console.log 'ranContainer', data
+    data
   .catch (err) ->
-    if err.status == 404
+    if err.statusCode == 404
       console.log 'caught error, going to try pulling'
       return pullAndCreate createOpt
+    if err.statusCode == 409
+      return deleteAndCreate createOpt
+    console.log 'runContainer err status', err?.status ? err
     throw err
   .then (id) ->
     console.log 'successfully started container', id

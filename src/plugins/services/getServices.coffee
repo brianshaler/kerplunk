@@ -2,9 +2,6 @@ path = require 'path'
 
 _ = require 'lodash'
 Promise = require 'when'
-docker = require 'docker-remote-api'
-
-request = docker()
 
 setupService = require './setupService'
 
