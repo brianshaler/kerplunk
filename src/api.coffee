@@ -46,6 +46,9 @@ module.exports = (System) ->
         return System.getGlobal key
       console.log "DENIED: #{pluginName}=>globals.#{key}"
 
+    getRoutes: (pluginName) ->
+      System.getRoutes()
+
     getComponent: (pluginName, pathname) ->
       component = System.getComponent pathname
       unless component

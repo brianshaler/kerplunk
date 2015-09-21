@@ -52,6 +52,15 @@ module.exports = (params = {}) ->
     setGlobal: (key, val) -> globals.set key, val
     getGlobal: (key) -> globals.get key
     getGlobals: -> globals.getGlobals()
+    getRoutes: ->
+      routes = _ plugins.getAll()
+        .map (plugin) -> plugin?.plugin ? plugin
+        .map (plugin) ->
+          _.flatten _.map (plugin?.routes ? []), (obj, group) ->
+            Object.keys obj
+        .flatten()
+        .compact()
+        .value()
 
     getProxy: (pluginName, isCore = false) ->
       proxy pluginName, (isCore == true)
