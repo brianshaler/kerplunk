@@ -20,8 +20,10 @@ module.exports = (service) ->
       .then inspectContainer
   .then (container) ->
     ports = {}
+
     for internal, settings of container.NetworkSettings.Ports
-      ports[internal] = settings[0].HostPort
+      if settings?[0]?.HostPort
+        ports[internal] = settings[0].HostPort
 
     pluginName: pluginName
     serviceName: serviceName
