@@ -11,10 +11,11 @@ loadAllConfigs = require './configs/loadAllConfigs'
 module.exports = (System) ->
 
   activePlugins = {}
-  intervals = []
   corePluginsStarted = false
+  jobTimeout = null
+  jobs = []
 
-  PluginManager =
+  Plugins =
     get: (name) ->
       #console.log 'plugins.get', name, Object.keys activePlugins
       p = activePlugins[name]?.plugin
@@ -41,39 +42,83 @@ module.exports = (System) ->
       init System, activePlugins
       .then (configs) -> null
 
-    runPlugin: (name, plugin) ->
+    runPlugin: (pluginName, plugin) ->
       plugin.start() if plugin.start
-      return unless plugin?.crons?.length > 0
-      for job in plugin.crons
-        if job.frequency >= 1
-          do (job) ->
-            job.intervalId = setInterval ->
-              unless job.running
-                try
-                  job.running = true
-                  job.task ->
-                    job.running = false
-                catch ex
-                  job.running = false
-                  console.error 'Cron job failed'
-                  console.error ex
-            , job.frequency * 1000
+      return unless plugin.jobs
+      mongoose = System.getMongoose 'kerplunk'
+      Job = mongoose.model 'Job'
+      Promise.all _.map plugin.jobs, (job, jobName) ->
+        Job.getOrCreate pluginName, jobName
+        .then (jobModel) ->
+          pluginName: pluginName
+          jobName: jobName
+          model: jobModel
+          frequency: job.frequency * 1000
+          task: job.task
+          running: false
+      .then (pluginJobs) ->
+        return unless pluginJobs?.length > 0
+        for job in pluginJobs
+          jobs.push job
 
     run: ->
-      Promise.promise (resolve, reject) ->
-        # console.log 'plugins.run()', Object.keys activePlugins
-        for name, plugin of activePlugins
-          continue if corePluginsStarted and plugin.isCore and plugin.plugin.noRestart
-          PluginManager.runPlugin name, plugin.plugin
+      jobs = []
+      Promise.all _.map activePlugins, (plugin, name) ->
+        return if corePluginsStarted and plugin.isCore and plugin.plugin.noRestart
+        Plugins.runPlugin name, plugin.plugin
+      .then ->
         corePluginsStarted = true
-        resolve()
+      .then Plugins.runJobs
+
+    runJobs: ->
+      jobFrequency = 5000
+      clearTimeout jobTimeout
+      currentDate = new Date()
+      currentTime = currentDate.getTime()
+      for job in jobs
+        continue unless job?.model?.nextRun < currentDate
+        unless job.frequency > jobFrequency
+          job.frequency = jobFrequency
+        continue unless typeof job.task is 'function'
+        continue unless job.running == false
+        do (job) ->
+          name = "#{job.pluginName}:#{job.jobName}"
+          job.model.nextRun = new Date currentTime + job.frequency
+          canRun = true
+          Promise job.model.save()
+          .catch (err) ->
+            console.log 'JOB save error', err.stack ? err
+            canRun = false
+          .then ->
+            return unless canRun == true
+            console.log 'JOB: running', name
+            job.running = true
+            Promise job.task()
+            .catch (err) ->
+              console.log 'JOB run error', name
+              message = [err?.message ? err]
+              if err?.stack
+                helpfulLines = _.filter err.stack.split('\n'), (line) ->
+                  return false unless /kerplunk-plugins/.test line
+                  return false if /node_modules/.test line
+                if helpfulLines.length > 0
+                  message.push err.stack
+              console.log message.join '\n'
+          .then ->
+            console.log 'JOB: finished', name
+            job.running = false
+          .catch (err) ->
+            console.log 'JOB internal error', name, err?.stack ? err
+      jobTimeout = setTimeout ->
+        Plugins.runJobs()
+      , jobFrequency
 
     stop: ->
+      clearTimeout jobTimeout
+      jobs = []
       Promise.promise (resolve, reject) ->
         for name, plugin of activePlugins
           continue if plugin.isCore
-          for job in (plugin.plugin.crons ? [])
-            clearInterval job.intervalId
           plugin.plugin.kill?()
         for name, plugin of activePlugins
           continue if plugin.isCore == true and plugin.plugin.noRestart == true
