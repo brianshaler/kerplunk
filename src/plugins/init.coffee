@@ -60,7 +60,12 @@ module.exports = (System, activePlugins) ->
         # console.log '> initialized:', config.name, Math.round((Date.now()-startTime) / 100) / 10 + 's'
         config.loadStatus = true
         config.initDeferred.resolve config.name + '.loaded'
+      .catch (err) ->
+        config.initDeferred.reject err
+
       config.initPromise
+      .catch (err) ->
+        console.log 'oh well', err?.stack ? err
   .then ->
     setTimeout ->
       # console.log 'register components'
