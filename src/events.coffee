@@ -68,10 +68,12 @@ module.exports = (System) ->
         promise = promise.then (_data) ->
           Promise fn _data
           .catch (err) -> _data
+          .then -> data
     promise = promise.then doer
     for fn in posts
       do (fn) ->
         promise = promise.then (_data) ->
           Promise fn _data
           .catch (err) -> _data
+          .then -> data
     promise
