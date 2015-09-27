@@ -5,7 +5,6 @@ _ = require 'lodash'
 Promise = require 'when'
 
 init = require './init'
-
 loadAllConfigs = require './configs/loadAllConfigs'
 
 module.exports = (System) ->
@@ -102,6 +101,8 @@ module.exports = (System) ->
                   return false unless /kerplunk-plugins/.test line
                   return false if /node_modules/.test line
                 if helpfulLines.length > 0
+                  message = message.concat helpfulLines.slice(0, 10)
+                else
                   message.push err.stack
               console.log message.join '\n'
           .then ->
