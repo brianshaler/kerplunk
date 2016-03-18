@@ -80,7 +80,8 @@ module.exports = (params = {}) ->
       .then -> console.log 'System: init plugins'
       .then checkSetup
       .then -> console.log 'System: init plugins'
-      .then plugins.init
+      .then ->
+        plugins.init true
       .then -> console.log 'System: process globals and events'
       .then plugins.getAll
       .then (plugins) ->
@@ -91,6 +92,7 @@ module.exports = (params = {}) ->
       .then -> console.log 'System: run plugins'
       .then plugins.run
       .then ->
+        console.log 'components', components.keys().length
         events.do 'init'
 
     stop: (next) ->
