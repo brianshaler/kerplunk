@@ -19,4 +19,6 @@ module.exports = (System) ->
         console.log 'problem trying to require', component
         console.log err?.stack ? err
         return
+    # TODO
+    # check: !component or typeof component is 'string'
     component
