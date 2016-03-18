@@ -37,8 +37,8 @@ module.exports = (System) ->
       , (err) ->
         next err
 
-    init: ->
-      init System, activePlugins
+    init: (waitForComponents = false) ->
+      init System, activePlugins, waitForComponents
       .then (configs) -> null
 
     runPlugin: (pluginName, plugin) ->

@@ -23,7 +23,7 @@ filterLoadable = (allConfigs) ->
     return false if config.canBeLoaded == false
     true
 
-module.exports = (System, activePlugins) ->
+module.exports = (System, activePlugins, waitForComponents = false) ->
   loadAllConfigs System
   .then (configs) ->
     allConfigs = configs[0].concat configs[1]
@@ -67,8 +67,7 @@ module.exports = (System, activePlugins) ->
       .catch (err) ->
         console.log 'oh well', err?.stack ? err
   .then ->
-    setTimeout ->
-      # console.log 'register components'
+    register = ->
       Promise.all _.map activePlugins, (plugin) ->
         # console.log 'registerComponents', plugin.name
         registerComponents System, plugin
@@ -76,5 +75,8 @@ module.exports = (System, activePlugins) ->
         System.do 'componentsRegistered', {}
       .catch (err) ->
         console.log 'issues with components registering', err
-    , 100
-    true
+    if waitForComponents == true
+      register()
+    else
+      setTimeout register, 10
+      true
