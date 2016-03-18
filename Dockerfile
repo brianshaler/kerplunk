@@ -1,9 +1,9 @@
-FROM node:0.10.39-slim
+FROM node:5.7-slim
 
 RUN apt-get update
 RUN apt-get install -y python build-essential
 
-RUN npm i -g gulp@3.8.8
+RUN npm i -g gulp@3.9.1
 RUN npm i -g forever nodemon
 
 WORKDIR /usr/src/app
